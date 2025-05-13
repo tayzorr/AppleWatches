@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Author: 		Happy Aung -->
+	<!-- Date: 			05-10-2025 -->
+	<!-- Class:			CSCI 2240 - Client Side Programming -->
+	<!-- Instructor:	Darren Pearson -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Project Part 2 by Happy Aung</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&family=Monoton&display=swap');
+
+
+	body {		background-color:	#ffffff;}
+    #hero {
+                width:              100vw;
+                height:             50vh;
+                overflow:           hidden;
+                display:            flex;
+                justify-content:    center;
+                align-items:        top;
+                position:           relative;
+                margin:             0;
+                padding:            0;
+}
+    .watchCircle{
+                position:           absolute;
+                width:              2400px;
+                height:             2400px;
+
+    }
+    .watch{
+                position:           absolute;
+                width:              500px;
+                height:             1200px;
+                left:               950px;
+                
+                margin:0;
+                transform-origin:   50% 100%;
+                /* border: 2px dashed red; */
+    }
+    #watch1{
+                transform:          rotate(0deg);
+    }
+    
+    #watch2{
+                transform:          rotate(45deg);
+    }
+     #watch3{
+                transform:          rotate(90deg);
+    }
+    #watch4{
+                transform:          rotate(135deg);
+    }
+    #watch5{
+                transform:          rotate(180deg);
+    }
+    #watch6{
+                transform:          rotate(225deg);
+    }
+    #watch7{
+                transform:          rotate(270deg);
+    }
+    #watch8{
+                transform:          rotate(315deg);
+    }
+	#clock1 {	background-color:   #ffffff;
+                position:		    absolute;
+                top:			    214px;
+                left:		        50%; 
+                transform:          translate(-53%,0%);
+                width:              364px;
+                height:             440px;
+				z-index:			0;}
+    .secondHand {position:           absolute;
+				top: 				0px;
+				left: 				177px;
+                transform-origin:   bottom center;
+				z-index:			1;}
+    .minuteHand {position:           absolute;
+				top: 				0px;
+				left: 				177px;
+                transform-origin:   bottom center;
+				z-index:			1;}
+    .hourHand   {position:           absolute;
+				top: 				0px;
+				left: 				177px;
+                transform-origin:   bottom center;
+				z-index:			1;}
+
+    #clock2 {	background-color:   #ff8484;
+                position:		    absolute;
+                top:			    214px;
+                left:		        50%; 
+                transform:          translate(-53%,0%);
+                width:              364px;
+                height:             440px;
+				z-index:			0;}
+
+    .secondNumber{color:            black;
+                position:           absolute;
+                top:                0px;
+                left:               150px;
+                
+            }
+
+    .minuteNumber{color:            black;
+                position:           absolute;
+                top:                38%;
+            }
+    
+    .hourNumber{color:              black;
+                position:           absolute;
+                top:                -5%;
+            }
+    .militaryHourNumber{
+                color:              black;
+                position:           absolute;
+                top:                -5%;
+            }
+    #digitalWatch1{
+                width:              100%;
+                left:		        50%; 
+                transform:          translate(-50%,0%);
+                font-family:        "Monoton", sans-serif;
+                font-size:          200px;
+                text-align:         center;
+    }
+    #digitalWatch2{
+                width:              90%;
+                left:		        50%; 
+                transform:          translate(-50%,0%);
+                font-family:        "Funnel Display", sans-serif;
+                font-size:          200px;
+                text-align:         right;
+                padding-left:       10px;
+                padding-right:      10px;
+    }
+    
+
+    #clockFrame1{position:           absolute;
+                left:		        50%; 
+                transform:          translate(-50%,0%);
+                z-index:            1;
+
+    }
+				
+
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="propeller.js"></script>
+
+<script>
+	$(document).ready(function (){
+        function updateTime(){
+            var now             = new Date();
+            var seconds         = now.getSeconds();
+            var milliseconds    = now.getMilliseconds();
+            var minutes         = now.getMinutes();
+            var hours           = now.getHours();
+            var time            = [milliseconds,seconds,minutes,hours];
+            //console.log(time); 
+            return(time);
+        }
+        
+        function analogClock(time){
+            var seconds         = (time[0]/1000)+time[1];
+            var minutes         = time[2];
+            var hours           = time[3];
+            var secondAngle     = (seconds/60)*360; 
+            var minuteAngle     = (minutes/60)*360;
+            var hourAngle       = ((hours%12)/12)*360;
+            // console.log(secondAngle);
+            // console.log(minuteAngle)
+            $('.secondHand').css('transform', 'rotate(' + secondAngle + 'deg)');
+            $('.minuteHand').css('transform', 'rotate(' + minuteAngle + 'deg)');
+            $('.hourHand').css('transform', 'rotate(' + hourAngle + 'deg)');
+
+        }
+
+        function digitalClock(time){
+            var seconds         = doubleDigit(time[1]);
+            var minutes         = doubleDigit(time[2]);
+
+            //process AM PM
+            var militaryHours   = time[3];
+            var hours = militaryHours%12;
+            var timeOfDay = "am";
+                if(militaryHours>12){
+                    timeOfDay= "pm";
+                }else timeOfDay = "am";
+
+            militaryHours   = doubleDigit(militaryHours);
+            hours           = doubleDigit(hours);
+            $('.secondNumber').html(seconds);
+            $('.minuteNumber').html(minutes);
+            $('.militaryHourNumber').html(militaryHours);
+            $('.hourNumber').html(hours);
+            
+        }
+        function doubleDigit(number){
+            if (number<10){
+                number = "0"+number;
+                return number;
+            }else return number;
+        }
+
+        function updateClock(){
+            var time = updateTime();
+            digitalClock(time);
+            analogClock(time);
+        }
+        
+        setInterval(updateClock,60);
+        $('.watchCircle').propeller({inertia: 0.98, speed: 0});
+        
+        
+    })
+	
+</script>
+</head>
+<body>
+    <div id="hero">
+        <div class="watchCircle">
+            <div class="watch" id="watch1">
+                <img src="clockFrame1.png" id="clockFrame1">
+                <div id="clock1">
+                    <span class="minuteNumber" id="digitalWatch1"></span>
+                    <span class="militaryHourNumber" id="digitalWatch1"></span>
+
+                </div>  
+            </div>
+            <div class="watch" id="watch2">
+                <img src="clockFrame2.png" id="clockFrame1">
+                <div id="clock2">
+                    <span class="minuteNumber" id="digitalWatch2"></span>
+                    <span class="hourNumber" id="digitalWatch2"></span>
+
+                </div>  
+            </div>
+            <div class="watch" id="watch3">
+                <img src="clockFrame3.png" id="clockFrame1">
+                <div id="clock1">
+                    <img src="secondHand1.png" class="secondHand">
+                    <img src="minuteHand1.png" class="minuteHand">
+                    <img src="hourHand1.png" class="hourHand">
+
+                </div>  
+            </div>
+            <div class="watch" id="watch4">
+                <img src="clockFrame4.png" id="clockFrame1">
+                <div id="clock1">
+                    <img src="secondHand1.png" class="secondHand">
+                    <img src="minuteHand1.png" class="minuteHand">
+                    <img src="hourHand1.png" class="hourHand">
+                </div>  
+            </div>
+
+            <div class="watch" id="watch5">
+                <img src="clockFrame1.png" id="clockFrame1">
+                <div id="clock1">
+                    <img src="secondHand1.png" class="secondHand">
+                    <img src="minuteHand1.png" class="minuteHand">
+                    <img src="hourHand1.png" class="hourHand">
+                </div>  
+            </div>
+
+            <div class="watch" id="watch6">
+                <img src="clockFrame2.png" id="clockFrame1">
+                <div id="clock1">
+                    <img src="secondHand1.png" class="secondHand">
+                    <img src="minuteHand1.png" class="minuteHand">
+                    <img src="hourHand1.png" class="hourHand">
+                </div>  
+            </div>
+
+            <div class="watch" id="watch7">
+                <img src="clockFrame3.png" id="clockFrame1">
+                <div id="clock1">
+                    <img src="secondHand1.png" class="secondHand">
+                    <img src="minuteHand1.png" class="minuteHand">
+                    <img src="hourHand1.png" class="hourHand">
+                </div>  
+            </div>
+
+            <div class="watch" id="watch8">
+                <img src="clockFrame4.png" id="clockFrame1">
+                <div id="clock1">
+                    <img src="secondHand1.png" class="secondHand">
+                    <img src="minuteHand1.png" class="minuteHand">
+                    <img src="hourHand1.png" class="hourHand">
+                </div>  
+            </div>
+            <!-- <img src="clockFrame2.png" id="clockFrame2">
+            <div id="clock2">
+                <span class="secondNumber"></span>
+                <span class="minuteNumber"></span>
+                <span class="hourNumber"></span>
+
+            </div> -->
+        </div>
+        </div>
+</body>
+</html>
